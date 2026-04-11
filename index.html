@@ -49,16 +49,29 @@
       border-radius: 10px;
       padding: 14px 16px;
       text-align: left;
-      text-decoration: none;
       color: inherit;
       display: block;
       transition: border-color 0.2s;
     }
     .repo-card:hover { border-color: #a020f0; }
-    .repo-name { font-size: 0.95rem; font-weight: bold; color: #a020f0; margin-bottom: 6px; word-break: break-all; }
+    
+    .repo-name {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #a020f0;
+      margin-bottom: 6px;
+      word-break: break-all;
+      display: block;
+    }
+    .repo-name:hover {
+      text-decoration: underline;
+      color: #c45eff;
+    }
+    
     .repo-desc { font-size: 0.82rem; color: #aaa; line-height: 1.5; min-height: 36px; }
+    
     .repo-meta { 
-      margin-top: 10px; 
+      margin-top: 12px; 
       display: flex; 
       gap: 12px; 
       font-size: 0.78rem; 
@@ -73,7 +86,13 @@
     }
     .star-icon { color: #f0c040; }
     
-    /* Homepage link with Font Awesome */
+    /* GitHub link & Live link now BOTH clearly inside the same card box */
+    .github-link {
+      color: #a020f0;
+      text-decoration: none;
+    }
+    .github-link:hover { text-decoration: underline; }
+    
     .homepage-link a {
       color: #a020f0;
       text-decoration: none;
@@ -83,8 +102,8 @@
       font-size: 1.05em;
     }
     .homepage-link a:hover {
-      text-decoration: underline;
       color: #c45eff;
+      text-decoration: underline;
     }
     .homepage-link i {
       transition: transform 0.2s;
@@ -165,17 +184,19 @@
           const forks = repo.forks_count > 0
             ? `<span>⑂ ${repo.forks_count}</span>` : '';
 
-          // Homepage link using Font Awesome globe icon
+          // Both links now live inside the SAME card box (no nested <a> tags)
+          const githubLink = `<a href="${repo.html_url}" target="_blank" rel="noopener" class="github-link">${repo.name}</a>`;
+          
           const homepage = repo.homepage
             ? `<span class="homepage-link"><a href="${repo.homepage}" target="_blank" rel="noopener" title="Visit live site"><i class="fa-solid fa-globe"></i></a></span>`
             : '';
 
           return `
-            <a class="repo-card" href="${repo.html_url}" target="_blank" rel="noopener">
-              <div class="repo-name">${repo.name}</div>
+            <div class="repo-card">
+              <div class="repo-name">${githubLink}</div>
               <div class="repo-desc">${repo.description || '<span style="color:#555">No description</span>'}</div>
               <div class="repo-meta">${langDot}${stars}${forks}${homepage}</div>
-            </a>`;
+            </div>`;
         }).join('');
 
       } catch (e) {
