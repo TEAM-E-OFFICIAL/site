@@ -16,53 +16,53 @@
       align-items: center;
       min-height: 100vh;
     }
-
     .container {
       text-align: center;
       max-width: 800px;
       padding: 40px;
     }
+    .logo { width: 120px; margin-bottom: 20px; }
+    h1 { font-size: 3rem; margin-bottom: 10px; }
+    p { font-size: 1.2rem; line-height: 1.6; color: #ccc; }
+    .highlight { color: #a020f0; font-weight: bold; }
 
-    .logo {
-      width: 120px;
-      margin-bottom: 20px;
+    /* Projects section */
+    .projects-section { margin-top: 40px; text-align: left; }
+    .projects-section h2 {
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 16px;
+      text-align: center;
     }
-
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 10px;
+    .repo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
     }
-
-    p {
-      font-size: 1.2rem;
-      line-height: 1.6;
-      color: #ccc;
-    }
-
-    .highlight {
-      color: #a020f0;
-      font-weight: bold;
-    }
-
-    .contact {
-      margin-top: 30px;
-      font-size: 1rem;
-    }
-
-    .contact a {
-      color: #a020f0;
+    .repo-card {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: left;
       text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: border-color 0.2s;
     }
+    .repo-card:hover { border-color: #a020f0; }
+    .repo-name { font-size: 0.95rem; font-weight: bold; color: #a020f0; margin-bottom: 6px; word-break: break-all; }
+    .repo-desc { font-size: 0.82rem; color: #aaa; line-height: 1.5; min-height: 36px; }
+    .repo-meta { margin-top: 10px; display: flex; gap: 12px; font-size: 0.78rem; color: #666; }
+    .repo-meta span { display: flex; align-items: center; gap: 4px; }
+    .star-icon { color: #f0c040; }
+    .loading { color: #666; font-size: 0.95rem; padding: 24px 0; text-align: center; }
+    .error-msg { color: #c0392b; font-size: 0.9rem; padding: 16px 0; text-align: center; }
 
-    .contact a:hover {
-      text-decoration: underline;
-    }
-
-    footer {
-      margin-top: 40px;
-      font-size: 0.9rem;
-      color: #777;
-    }
+    .contact { margin-top: 30px; font-size: 1rem; }
+    .contact a { color: #a020f0; text-decoration: none; }
+    .contact a:hover { text-decoration: underline; }
+    footer { margin-top: 40px; font-size: 0.9rem; color: #777; }
   </style>
 </head>
 <body>
@@ -82,6 +82,13 @@
       and empower you.
     </p>
 
+    <div class="projects-section">
+      <h2>Projects</h2>
+      <div id="repo-grid" class="repo-grid">
+        <div class="loading">Loading repositories...</div>
+      </div>
+    </div>
+
     <div class="contact">
       Contact us: <a href="mailto:team-e-contact@proton.me">team-e-contact@proton.me</a>
     </div>
@@ -90,5 +97,51 @@
       © 2026 Team E. Open Source for Everyone.
     </footer>
   </div>
+
+  <script>
+    const langColors = {
+      JavaScript: '#f1e05a', TypeScript: '#3178c6', Python: '#3572A5',
+      HTML: '#e34c26', CSS: '#563d7c', Rust: '#dea584', Go: '#00add8',
+      Java: '#b07219', 'C++': '#f34b7d', C: '#555555', Shell: '#89e051'
+    };
+
+    async function loadRepos() {
+      const grid = document.getElementById('repo-grid');
+      try {
+        const res = await fetch('https://api.github.com/orgs/TEAM-E-OFFICIAL/repos?per_page=100&sort=updated');
+        if (!res.ok) throw new Error('GitHub API returned ' + res.status);
+        const repos = await res.json();
+        const publicRepos = repos.filter(r => !r.private && !r.fork);
+
+        if (!publicRepos.length) {
+          grid.innerHTML = '<div class="loading">No public repositories found.</div>';
+          return;
+        }
+
+        grid.innerHTML = publicRepos.map(repo => {
+          const dotColor = langColors[repo.language] || '#a020f0';
+          const langDot = repo.language
+            ? `<span><span style="width:8px;height:8px;border-radius:50%;background:${dotColor};display:inline-block;margin-right:4px;"></span>${repo.language}</span>`
+            : '';
+          const stars = repo.stargazers_count > 0
+            ? `<span><span class="star-icon">★</span> ${repo.stargazers_count}</span>` : '';
+          const forks = repo.forks_count > 0
+            ? `<span>⑂ ${repo.forks_count}</span>` : '';
+
+          return `
+            <a class="repo-card" href="${repo.html_url}" target="_blank" rel="noopener">
+              <div class="repo-name">${repo.name}</div>
+              <div class="repo-desc">${repo.description || '<span style="color:#555">No description</span>'}</div>
+              <div class="repo-meta">${langDot}${stars}${forks}</div>
+            </a>`;
+        }).join('');
+
+      } catch (e) {
+        grid.innerHTML = `<div class="error-msg">Could not load repositories: ${e.message}</div>`;
+      }
+    }
+
+    loadRepos();
+  </script>
 </body>
 </html>
