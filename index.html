@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Team E</title>
   <link rel="icon" type="image/jpeg" href="Firefox 4_7_2026 10_42_56 PM.jpg">
+  
+  <!-- Font Awesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
   <style>
     body {
       margin: 0;
@@ -53,9 +57,42 @@
     .repo-card:hover { border-color: #a020f0; }
     .repo-name { font-size: 0.95rem; font-weight: bold; color: #a020f0; margin-bottom: 6px; word-break: break-all; }
     .repo-desc { font-size: 0.82rem; color: #aaa; line-height: 1.5; min-height: 36px; }
-    .repo-meta { margin-top: 10px; display: flex; gap: 12px; font-size: 0.78rem; color: #666; }
-    .repo-meta span { display: flex; align-items: center; gap: 4px; }
+    .repo-meta { 
+      margin-top: 10px; 
+      display: flex; 
+      gap: 12px; 
+      font-size: 0.78rem; 
+      color: #666; 
+      flex-wrap: wrap; 
+      align-items: center;
+    }
+    .repo-meta span { 
+      display: flex; 
+      align-items: center; 
+      gap: 4px; 
+    }
     .star-icon { color: #f0c040; }
+    
+    /* Homepage link with Font Awesome */
+    .homepage-link a {
+      color: #a020f0;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 1.05em;
+    }
+    .homepage-link a:hover {
+      text-decoration: underline;
+      color: #c45eff;
+    }
+    .homepage-link i {
+      transition: transform 0.2s;
+    }
+    .homepage-link a:hover i {
+      transform: scale(1.15);
+    }
+
     .loading { color: #666; font-size: 0.95rem; padding: 24px 0; text-align: center; }
     .error-msg { color: #c0392b; font-size: 0.9rem; padding: 16px 0; text-align: center; }
 
@@ -128,11 +165,16 @@
           const forks = repo.forks_count > 0
             ? `<span>⑂ ${repo.forks_count}</span>` : '';
 
+          // Homepage link using Font Awesome globe icon
+          const homepage = repo.homepage
+            ? `<span class="homepage-link"><a href="${repo.homepage}" target="_blank" rel="noopener" title="Visit live site"><i class="fa-solid fa-globe"></i></a></span>`
+            : '';
+
           return `
             <a class="repo-card" href="${repo.html_url}" target="_blank" rel="noopener">
               <div class="repo-name">${repo.name}</div>
               <div class="repo-desc">${repo.description || '<span style="color:#555">No description</span>'}</div>
-              <div class="repo-meta">${langDot}${stars}${forks}</div>
+              <div class="repo-meta">${langDot}${stars}${forks}${homepage}</div>
             </a>`;
         }).join('');
 
