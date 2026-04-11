@@ -191,11 +191,21 @@
             ? `<span class="homepage-link"><a href="${repo.homepage}" target="_blank" rel="noopener" title="Visit live site"><i class="fa-solid fa-globe" style="color: rgb(255, 255, 255);"></i></a></span>`
             : '';
 
+          // NEW: Last updated date (from GitHub's updated_at field)
+          const updatedDate = repo.updated_at
+            ? new Date(repo.updated_at).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              })
+            : 'Unknown';
+          const updated = `<span><i class="fa-solid fa-calendar-days"></i> ${updatedDate}</span>`;
+
           return `
             <div class="repo-card">
               <div class="repo-name">${githubLink}</div>
               <div class="repo-desc">${repo.description || '<span style="color:#555">No description</span>'}</div>
-              <div class="repo-meta">${langDot}${stars}${forks}${homepage}</div>
+              <div class="repo-meta">${langDot}${stars}${forks}${homepage}${updated}</div>
             </div>`;
         }).join('');
 
